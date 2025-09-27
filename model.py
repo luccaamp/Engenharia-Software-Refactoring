@@ -11,7 +11,7 @@ class Rental:
     def __init__(self, book: Book, days_rented: int):
         self.book = book
         self.days_rented = days_rented
-    
+
     def get_charge(self) -> float:
         amount = 0
         if self.book.price_code == Book.REGULAR:
@@ -25,6 +25,12 @@ class Rental:
             if self.days_rented > 3:
                 amount += (self.days_rented - 3) * 1.5
         return amount
+
+    def get_frequent_renter_points(self) -> int:
+        points = 1
+        if self.book.price_code == Book.NEW_RELEASE and self.days_rented > 1:
+            points += 1
+        return points
 
 class Client:
     def __init__(self, name: str):
@@ -40,19 +46,17 @@ class Client:
         result = f"Rental summary for {self.name}\n"
 
         for rental in self.rentals:
-            # usar o método movido para Rental
+            # calcular valor
             amount = rental.get_charge()
 
-            # add frequent renter points
-            frequent_renter_points += 1
-            if rental.book.price_code == Book.NEW_RELEASE and rental.days_rented > 1:
-                frequent_renter_points += 1
+            # calcular pontos de locação usando o método extraído
+            frequent_renter_points += rental.get_frequent_renter_points()
 
-            # show each rental result
+            # mostrar resultado de cada aluguel
             result += f"- {rental.book.title}: {amount}\n"
             total_amount += amount
 
-        # show total result
+        # mostrar resultado total
         result += f"Total: {total_amount}\n"
         result += f"Points: {frequent_renter_points}"
         return result
